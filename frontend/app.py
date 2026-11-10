@@ -1,7 +1,9 @@
+import os
+
 import requests
 import streamlit as st
 
-API_URL = "http://localhost:5000/api"
+API_URL = os.getenv("NOTES_API_URL", "http://localhost:5000/api").rstrip("/")
 
 st.set_page_config(page_title="Notes", page_icon="📝")
 
@@ -16,8 +18,17 @@ def api(method, path, json=None):
         headers["Authorization"] = f"Bearer {st.session_state.token}"
     try:
         res = requests.request(method, API_URL + path, json=json, headers=headers, timeout=10)
-    except requests.exceptions.RequestException:
-        return None, "Cannot reach the server."
+    except requests.exceptions.ConnectionError:
+        return None, (
+            f"Cannot reach the backend at {API_URL}. Start it in a separate terminal "
+            "from the backend folder with `npm start`. If this frontend is hosted "
+            "remotely, set NOTES_API_URL to the backend's reachable API URL; "
+            "localhost refers to the host running Streamlit."
+        )
+    except requests.exceptions.Timeout:
+        return None, f"The backend at {API_URL} did not respond within 10 seconds."
+    except requests.exceptions.RequestException as exc:
+        return None, f"The request to {API_URL} failed: {exc}"
 
     try:
         data = res.json()

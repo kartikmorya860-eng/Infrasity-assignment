@@ -101,6 +101,7 @@ npm install
 
 ### 4. Start the backend server
 
+Keep this terminal open while using the app:
 ```bash
 cd backend
 npm start
@@ -114,7 +115,7 @@ http://localhost:5000
 
 ### 5. Install frontend dependencies
 
-Open a new terminal and run:
+Open a **second terminal** in the project root and run:
 
 ```bash
 cd frontend
@@ -123,6 +124,7 @@ pip install -r requirements.txt
 
 ### 6. Start the Streamlit app
 
+In that second terminal, start Streamlit:
 ```bash
 cd frontend
 streamlit run app.py
@@ -133,6 +135,12 @@ The frontend will run at:
 ```text
 http://localhost:8501
 ```
+
+The backend must also be running at `http://localhost:5000`. If you change its
+address, set `NOTES_API_URL` to the backend API base URL (for example,
+`http://localhost:5000/api`) before starting Streamlit. For a remotely hosted
+frontend, use a backend URL reachable from that host; `localhost` will refer to
+the machine running Streamlit, not your personal computer.
 
 ## How to Use
 
