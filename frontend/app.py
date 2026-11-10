@@ -1,5 +1,5 @@
+# Important imports
 import os
-
 import requests
 import streamlit as st
 
@@ -124,3 +124,4 @@ if st.session_state.token:
     notes_page()
 else:
     auth_page()
+    # end
