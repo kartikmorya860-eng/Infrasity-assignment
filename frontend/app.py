@@ -11,13 +11,19 @@ if "token" not in st.session_state:
     st.session_state.token = None
 
 
-def api(method, path, json=None):
-    """Call the backend. Returns (data, error_message)."""
+def api(method, path, payload=None):
+    """Send a request to the API and return its data or an error message."""
     headers = {}
     if st.session_state.token:
         headers["Authorization"] = f"Bearer {st.session_state.token}"
     try:
-        res = requests.request(method, API_URL + path, json=json, headers=headers, timeout=10)
+        response = requests.request(
+            method,
+            API_URL + path,
+            json=payload,
+            headers=headers,
+            timeout=10,
+        )
     except requests.exceptions.ConnectionError:
         return None, (
             f"Cannot reach the backend at {API_URL}. Start it in a separate terminal "
@@ -31,14 +37,14 @@ def api(method, path, json=None):
         return None, f"The request to {API_URL} failed: {exc}"
 
     try:
-        data = res.json()
+        data = response.json()
     except ValueError:
         data = {}
-    if res.ok:
+    if response.ok:
         return data, None
 
-    if res.status_code == 401:
-        st.session_state.token = None  # token expired -> back to login
+    if response.status_code == 401:
+        st.session_state.token = None
     return None, data.get("error", {}).get("message", "Something went wrong.")
 
 
@@ -76,7 +82,6 @@ def notes_page():
         st.session_state.token = None
         st.rerun()
 
-    # Create note
     st.subheader("New note")
     title = st.text_input("Title", key="new_title")
     content = st.text_area("Content", key="new_content")
@@ -89,7 +94,6 @@ def notes_page():
             st.session_state.pop("new_content", None)
             st.rerun()
 
-    # List notes
     st.subheader("Your notes")
     data, err = api("GET", "/notes")
     if err:
