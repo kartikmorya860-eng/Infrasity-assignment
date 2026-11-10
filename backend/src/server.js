@@ -10,12 +10,10 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/notes", require("./routes/notes"));
 
-// Unknown routes
 app.use((req, res) => {
   res.status(404).json({ error: { message: "Route not found" } });
 });
 
-// Any unexpected error ends up here (Express 5 forwards async errors automatically)
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   if (status === 500) console.error(err);

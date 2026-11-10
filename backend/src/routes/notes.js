@@ -3,9 +3,8 @@ const db = require("../db");
 const auth = require("../middleware/auth");
 
 const router = express.Router();
-router.use(auth); // every notes route needs a valid token
+router.use(auth);
 
-// Checks title/content before saving
 const validate = (req, res, next) => {
   const { title, content } = req.body || {};
   if (!title || !title.trim() || !content || !content.trim()) {
@@ -17,7 +16,6 @@ const validate = (req, res, next) => {
   next();
 };
 
-// Every query filters by req.userId, so users only touch their own notes
 router.get("/", async (req, res) => {
   const [notes] = await db.query(
     "SELECT id, title, content, created_at, updated_at FROM notes WHERE user_id = ? ORDER BY updated_at DESC",
